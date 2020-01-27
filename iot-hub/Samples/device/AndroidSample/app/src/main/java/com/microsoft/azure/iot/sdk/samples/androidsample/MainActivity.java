@@ -27,13 +27,15 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String connString = BuildConfig.DeviceConnectionString;;
 
+    private int bandwidth;
     private double temperature;
-    private double humidity;
     private String msgStr;
     private Message sendMessage;
     private String lastException;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView txtMsgsSentVal;
     TextView txtLastTempVal;
-    TextView txtLastHumidityVal;
+    TextView txtLastBandwidthVal;
     TextView txtLastMsgSentVal;
     TextView txtLastMsgReceivedVal;
 
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private int receiptsConfirmedCount = 0;
     private int sendFailuresCount = 0;
     private int msgReceivedCount = 0;
-    private int sendMessagesInterval = 5000;
+    private int sendMessagesInterval = 3000;
 
     private final Handler handler = new Handler();
     private Thread sendThread;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         txtMsgsSentVal = findViewById(R.id.txtMsgsSentVal);
 
         txtLastTempVal = findViewById(R.id.txtLastTempVal);
-        txtLastHumidityVal = findViewById(R.id.txtLastHumidityVal);
+        txtLastBandwidthVal = findViewById(R.id.txtLastBandwidthVal);
         txtLastMsgSentVal = findViewById(R.id.txtLastMsgSentVal);
         txtLastMsgReceivedVal = findViewById(R.id.txtLastMsgReceivedVal);
 
@@ -151,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     final Runnable updateRunnable = new Runnable() {
         public void run() {
             txtLastTempVal.setText(String.format("%.2f",temperature));
-            txtLastHumidityVal.setText(String.format("%.2f",humidity));
+            txtLastBandwidthVal.setText(Integer.toString(bandwidth));
             txtMsgsSentVal.setText(Integer.toString(msgSentCount));
             txtLastMsgSentVal.setText("[" + new String(sendMessage.getBytes(), Message.DEFAULT_IOTHUB_MESSAGE_CHARSET) + "]");
         }
@@ -181,19 +183,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendMessages()
     {
-        temperature = 20.0 + Math.random() * 10;
-        humidity = 30.0 + Math.random() * 20;
-        msgStr = "\"temperature\":" + String.format("%.2f",temperature) + ", \"humidity\":" + String.format("%.2f",humidity);
+        temperature = 3.23 + (int) (Math.random() * 12);
+        bandwidth = 1000 + (int) (Math.random() * 1800);
+        Map msgMap = new HashMap <String, Object>() {{
+            put("temperature", temperature);
+            put("bandwidth", bandwidth);
+        }};
+        msgStr = new JSONObject(msgMap).toString();
         try
         {
             sendMessage = new Message(msgStr);
-            sendMessage.setProperty("temperatureAlert", temperature > 28 ? "true" : "false");
+            sendMessage.setContentType("application/json");
+            sendMessage.setProperty("temperatureAlert", temperature > 15 ? "true" : "false");
             sendMessage.setMessageId(java.util.UUID.randomUUID().toString());
             System.out.println("Message Sent: " + msgStr);
             EventCallback eventCallback = new EventCallback();
             client.sendEventAsync(sendMessage, eventCallback, msgSentCount);
             msgSentCount++;
             handler.post(updateRunnable);
+
+
         }
         catch (Exception e)
         {

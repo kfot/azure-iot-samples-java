@@ -125,16 +125,16 @@
         android:textColor="@android:color/holo_blue_dark" />
 
     <TextView
-        android:id="@+id/txtLastHumidity"
+        android:id="@+id/txtLastBandwidth"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
         android:layout_alignStart="@+id/txtMsgsSent"
         android:layout_below="@+id/txtLastTemp"
-        android:text="Last Humidity Reading (%):"
+        android:text="Last bandwidth Reading (%):"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/txtLastHumidityVal"
+        android:id="@+id/txtLastBandwidthVal"
         android:layout_width="60dp"
         android:layout_height="25dp"
         android:layout_alignStart="@+id/txtMsgsSentVal"
@@ -148,7 +148,7 @@
         android:layout_width="wrap_content"
         android:layout_height="25dp"
         android:layout_alignStart="@+id/txtMsgsSent"
-        android:layout_below="@+id/txtLastHumidity"
+        android:layout_below="@+id/txtLastBandwidth"
         android:text="Last Message sent:"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
